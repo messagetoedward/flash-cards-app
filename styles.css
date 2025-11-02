@@ -243,16 +243,9 @@ header p {
         page-break-after: auto;
     }
 
-    /* Page Labels (optional - can be removed) */
+    /* Page Labels (hidden when printing) */
     .page-label {
-        position: absolute;
-        top: 0.1in;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 10pt;
-        color: #999;
-        font-weight: bold;
+       display: none; /* Hide labels from print output */
     }
 
     /* Cards Grid Layout: 2 columns x 4 rows */
@@ -334,6 +327,64 @@ header p {
         border-left: none;
         border-bottom: none;
     }
+
+/* ===========================
+   MERGED CARDS STYLING
+=========================== */
+
+/* Disabled input fields (when merged) */
+.card-input-group.merged-into {
+    opacity: 0.5;
+    pointer-events: none;
+    background: #f0f0f0;
+}
+
+.card-input-group.merged-into::after {
+    content: '🔗 Merged with card above';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ff9800;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.card-input-group {
+    position: relative;
+}
+
+/* Print styles for merged cards */
+@media print {
+    /* Merged card spans 2 rows vertically */
+    .card.merged {
+        grid-row: span 2;
+        padding: 0.4in;
+    }
+    
+    /* Hide the card that was merged into */
+    .card.hidden {
+        display: none;
+    }
+    
+    /* Adjust grid for merged cards in Side A */
+    .cards-grid.has-merged-q1-q3 { grid-template-rows: 5.5in 2.75in 2.75in; }
+    .cards-grid.has-merged-q2-q4 { grid-template-rows: 5.5in 2.75in 2.75in; }
+    .cards-grid.has-merged-q3-q5 { grid-template-rows: 2.75in 5.5in 2.75in; }
+    .cards-grid.has-merged-q4-q6 { grid-template-rows: 2.75in 5.5in 2.75in; }
+    .cards-grid.has-merged-q5-q7 { grid-template-rows: 2.75in 2.75in 5.5in; }
+    .cards-grid.has-merged-q6-q8 { grid-template-rows: 2.75in 2.75in 5.5in; }
+    
+    /* Adjust grid for merged cards in Side B */
+    .cards-grid.mirrored.has-merged-a1-a3 { grid-template-rows: 5.5in 2.75in 2.75in; }
+    .cards-grid.mirrored.has-merged-a2-a4 { grid-template-rows: 5.5in 2.75in 2.75in; }
+    .cards-grid.mirrored.has-merged-a3-a5 { grid-template-rows: 2.75in 5.5in 2.75in; }
+    .cards-grid.mirrored.has-merged-a4-a6 { grid-template-rows: 2.75in 5.5in 2.75in; }
+    .cards-grid.mirrored.has-merged-a5-a7 { grid-template-rows: 2.75in 2.75in 5.5in; }
+    .cards-grid.mirrored.has-merged-a6-a8 { grid-template-rows: 2.75in 2.75in 5.5in; }
+}
 }
 
 /* ===========================
