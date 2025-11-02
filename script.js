@@ -45,8 +45,14 @@ function populateCards() {
         printA.className = 'card';
         
         // Re-enable all input groups
-        const cardGroup = document.querySelector(`#q${i}`).closest('.card-input-group');
-        cardGroup.classList.remove('merged-into');
+        const qCardGroup = document.querySelector(`#q${i}`).closest('.card-input-group');
+        const aCardGroup = document.querySelector(`#a${i}`).closest('.card-input-group');
+        qCardGroup.classList.remove('merged-into');
+        aCardGroup.classList.remove('merged-into');
+        
+        // Re-enable inputs
+        document.getElementById(`q${i}`).disabled = false;
+        document.getElementById(`a${i}`).disabled = false;
     }
     
     // Reset grid classes
@@ -55,46 +61,44 @@ function populateCards() {
     sideA.className = 'cards-grid';
     sideB.className = 'cards-grid mirrored';
     
-    // Process each card
+    // First pass: detect which cards need merging
+    const needsQMerge = {};
+    const needsAMerge = {};
+    
+    for (let i = 1; i <= 8; i += 2) { // Only check odd cards (1,3,5,7)
+        const questionText = document.getElementById(`q${i}`).value.trim();
+        const answerText = document.getElementById(`a${i}`).value.trim();
+        
+        needsQMerge[i] = questionText && needsMerge(questionText) && (i + 2 <= 8);
+        needsAMerge[i] = answerText && needsMerge(answerText) && (i + 2 <= 8);
+    }
+    
+    // Second pass: populate cards
     for (let i = 1; i <= 8; i++) {
-        // Skip if this card was merged into previous card
         if (mergedCards.questions.has(i) || mergedCards.answers.has(i)) {
             continue;
         }
         
-        // Get input values
         const questionText = document.getElementById(`q${i}`).value.trim();
         const answerText = document.getElementById(`a${i}`).value.trim();
-        
-        // Get print card elements
         const printQuestionCard = document.getElementById(`print-q${i}`);
         const printAnswerCard = document.getElementById(`print-a${i}`);
         
-        // Check if merge is needed for question
-        if (questionText && needsMerge(questionText)) {
-            const mergeTarget = i + 2; // Merge with card 2 rows down (same column)
-            if (mergeTarget <= 8) {
-                handleMerge(i, mergeTarget, 'q', questionText);
-            } else {
-                // Can't merge, just fit as best as possible
-                printQuestionCard.textContent = questionText;
-                autoResizeText(printQuestionCard, false);
-            }
+        // Check if EITHER Q or A needs merge for this pair
+        const shouldMergeQ = needsQMerge[i] || needsAMerge[i];
+        const shouldMergeA = needsAMerge[i] || needsQMerge[i];
+        
+        // Handle Question
+        if (shouldMergeQ && (i + 2 <= 8)) {
+            handleMerge(i, i + 2, 'q', questionText || `Q${i}`);
         } else {
             printQuestionCard.textContent = questionText || `Q${i}`;
             autoResizeText(printQuestionCard, false);
         }
         
-        // Check if merge is needed for answer
-        if (answerText && needsMerge(answerText)) {
-            const mergeTarget = i + 2; // Merge with card 2 rows down (same column)
-            if (mergeTarget <= 8) {
-                handleMerge(i, mergeTarget, 'a', answerText);
-            } else {
-                // Can't merge, just fit as best as possible
-                printAnswerCard.textContent = answerText;
-                autoResizeText(printAnswerCard, false);
-            }
+        // Handle Answer
+        if (shouldMergeA && (i + 2 <= 8)) {
+            handleMerge(i, i + 2, 'a', answerText || `A${i}`);
         } else {
             printAnswerCard.textContent = answerText || `A${i}`;
             autoResizeText(printAnswerCard, false);
@@ -108,7 +112,7 @@ function populateCards() {
 function needsMerge(text) {
     // Simple heuristic: if text is very long, it needs merge
     // Adjust threshold as needed
-    return text.length > 250; // Characters threshold
+    return text.length > 450; // Characters threshold
 }
 
 // ===========================

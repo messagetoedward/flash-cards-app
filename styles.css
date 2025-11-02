@@ -27,7 +27,6 @@ body {
     padding: 40px;
 }
 
-/* Header Styling */
 header {
     text-align: center;
     margin-bottom: 30px;
@@ -46,7 +45,6 @@ header p {
     color: #666;
 }
 
-/* Instructions Section */
 .instructions {
     background: #f8f9ff;
     border-left: 4px solid #667eea;
@@ -79,6 +77,7 @@ header p {
     padding: 20px;
     margin-bottom: 20px;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .card-input-group:hover {
@@ -100,20 +99,12 @@ header p {
     margin-right: 8px;
 }
 
-/* Input Pair Layout */
 .input-pair {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
 }
 
-@media (max-width: 768px) {
-    .input-pair {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Input Fields */
 .input-field {
     display: flex;
     flex-direction: column;
@@ -148,7 +139,6 @@ header p {
     color: #aaa;
 }
 
-/* Button Group */
 .button-group {
     display: flex;
     gap: 15px;
@@ -199,17 +189,40 @@ header p {
 }
 
 /* ===========================
-   PRINT CONTAINER (Hidden on Screen)
+   MERGED CARDS STYLING (Screen)
+   =========================== */
+.card-input-group.merged-into {
+    opacity: 0.5;
+    pointer-events: none;
+    background: #f0f0f0;
+}
+
+.card-input-group.merged-into::after {
+    content: '🔗 Merged with card above';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ff9800;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* ===========================
+   PRINT CONTAINER
    =========================== */
 .print-container {
     display: none;
 }
 
 /* ===========================
-   PRINT STYLES (US Letter Size)
+   PRINT STYLES
    =========================== */
 @media print {
-    /* Hide everything except print container */
     body {
         background: white;
         padding: 0;
@@ -224,13 +237,11 @@ header p {
         display: block !important;
     }
 
-    /* Page Setup for US Letter */
     @page {
-        size: letter; /* US Letter: 8.5in x 11in */
+        size: letter;
         margin: 0;
     }
 
-    /* Each Print Page (Side A or Side B) */
     .print-page {
         width: 8.5in;
         height: 11in;
@@ -243,22 +254,21 @@ header p {
         page-break-after: auto;
     }
 
-    /* Page Labels (hidden when printing) */
     .page-label {
-       display: none; /* Hide labels from print output */
+        display: none;
     }
 
-    /* Cards Grid Layout: 2 columns x 4 rows */
+    /* Grid Layout */
     .cards-grid {
         width: 8.5in;
         height: 11in;
         display: grid;
-        grid-template-columns: repeat(2, 4.25in);
-        grid-template-rows: repeat(4, 2.75in);
+        grid-template-columns: 4.25in 4.25in;
+        grid-template-rows: 2.75in 2.75in 2.75in 2.75in;
         gap: 0;
     }
 
-    /* Individual Card Styling */
+    /* Card Styling */
     .card {
         border: 1px dashed #ccc;
         display: flex;
@@ -267,44 +277,56 @@ header p {
         padding: 0.3in;
         text-align: center;
         overflow: hidden;
-        position: relative;
         word-wrap: break-word;
         hyphens: auto;
-    }
-
-    /* Card Text Styling */
-    .card {
         font-family: Arial, sans-serif;
-        font-size: 16pt; /* Default size - JavaScript will adjust this */
+        font-size: 16pt;
         line-height: 1.4;
         color: #000;
     }
 
-    /* Remove borders for cleaner look (optional) */
-    /* Uncomment the line below if you don't want dashed borders */
-    /* .card { border: none; } */
+    /* Question Cards Positioning */
+    #print-q1 { grid-row: 1; grid-column: 1; }
+    #print-q2 { grid-row: 1; grid-column: 2; }
+    #print-q3 { grid-row: 2; grid-column: 1; }
+    #print-q4 { grid-row: 2; grid-column: 2; }
+    #print-q5 { grid-row: 3; grid-column: 1; }
+    #print-q6 { grid-row: 3; grid-column: 2; }
+    #print-q7 { grid-row: 4; grid-column: 1; }
+    #print-q8 { grid-row: 4; grid-column: 2; }
 
-    /* Mirrored Layout for Side B (Answers) */
-    /* This ensures answers align with questions when printed double-sided */
-    .cards-grid.mirrored {
-        grid-template-areas:
-            "a2 a1"
-            "a4 a3"
-            "a6 a5"
-            "a8 a7";
+    /* Merged Question Cards */
+    #print-q1.merged { grid-row: 1 / 3; grid-column: 1; }
+    #print-q2.merged { grid-row: 1 / 3; grid-column: 2; }
+    #print-q3.merged { grid-row: 2 / 4; grid-column: 1; }
+    #print-q4.merged { grid-row: 2 / 4; grid-column: 2; }
+    #print-q5.merged { grid-row: 3 / 5; grid-column: 1; }
+    #print-q6.merged { grid-row: 3 / 5; grid-column: 2; }
+
+    /* Answer Cards Positioning (Mirrored) */
+    #print-a1 { grid-row: 1; grid-column: 2; }
+    #print-a2 { grid-row: 1; grid-column: 1; }
+    #print-a3 { grid-row: 2; grid-column: 2; }
+    #print-a4 { grid-row: 2; grid-column: 1; }
+    #print-a5 { grid-row: 3; grid-column: 2; }
+    #print-a6 { grid-row: 3; grid-column: 1; }
+    #print-a7 { grid-row: 4; grid-column: 2; }
+    #print-a8 { grid-row: 4; grid-column: 1; }
+
+    /* Merged Answer Cards */
+    #print-a1.merged { grid-row: 1 / 3; grid-column: 2; }
+    #print-a2.merged { grid-row: 1 / 3; grid-column: 1; }
+    #print-a3.merged { grid-row: 2 / 4; grid-column: 2; }
+    #print-a4.merged { grid-row: 2 / 4; grid-column: 1; }
+    #print-a5.merged { grid-row: 3 / 5; grid-column: 2; }
+    #print-a6.merged { grid-row: 3 / 5; grid-column: 1; }
+
+    /* Hidden Cards */
+    .card.hidden {
+        display: none;
     }
 
-    /* Assign grid areas to answer cards */
-    #print-a1 { grid-area: a1; }
-    #print-a2 { grid-area: a2; }
-    #print-a3 { grid-area: a3; }
-    #print-a4 { grid-area: a4; }
-    #print-a5 { grid-area: a5; }
-    #print-a6 { grid-area: a6; }
-    #print-a7 { grid-area: a7; }
-    #print-a8 { grid-area: a8; }
-
-    /* Optional: Add cut guides at corners */
+    /* Cut Guides */
     .card::before,
     .card::after {
         content: '';
@@ -327,64 +349,6 @@ header p {
         border-left: none;
         border-bottom: none;
     }
-
-/* ===========================
-   MERGED CARDS STYLING
-=========================== */
-
-/* Disabled input fields (when merged) */
-.card-input-group.merged-into {
-    opacity: 0.5;
-    pointer-events: none;
-    background: #f0f0f0;
-}
-
-.card-input-group.merged-into::after {
-    content: '🔗 Merged with card above';
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ff9800;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    font-weight: bold;
-}
-
-.card-input-group {
-    position: relative;
-}
-
-/* Print styles for merged cards */
-@media print {
-    /* Merged card spans 2 rows vertically */
-    .card.merged {
-        grid-row: span 2;
-        padding: 0.4in;
-    }
-    
-    /* Hide the card that was merged into */
-    .card.hidden {
-        display: none;
-    }
-    
-    /* Adjust grid for merged cards in Side A */
-    .cards-grid.has-merged-q1-q3 { grid-template-rows: 5.5in 2.75in 2.75in; }
-    .cards-grid.has-merged-q2-q4 { grid-template-rows: 5.5in 2.75in 2.75in; }
-    .cards-grid.has-merged-q3-q5 { grid-template-rows: 2.75in 5.5in 2.75in; }
-    .cards-grid.has-merged-q4-q6 { grid-template-rows: 2.75in 5.5in 2.75in; }
-    .cards-grid.has-merged-q5-q7 { grid-template-rows: 2.75in 2.75in 5.5in; }
-    .cards-grid.has-merged-q6-q8 { grid-template-rows: 2.75in 2.75in 5.5in; }
-    
-    /* Adjust grid for merged cards in Side B */
-    .cards-grid.mirrored.has-merged-a1-a3 { grid-template-rows: 5.5in 2.75in 2.75in; }
-    .cards-grid.mirrored.has-merged-a2-a4 { grid-template-rows: 5.5in 2.75in 2.75in; }
-    .cards-grid.mirrored.has-merged-a3-a5 { grid-template-rows: 2.75in 5.5in 2.75in; }
-    .cards-grid.mirrored.has-merged-a4-a6 { grid-template-rows: 2.75in 5.5in 2.75in; }
-    .cards-grid.mirrored.has-merged-a5-a7 { grid-template-rows: 2.75in 2.75in 5.5in; }
-    .cards-grid.mirrored.has-merged-a6-a8 { grid-template-rows: 2.75in 2.75in 5.5in; }
-}
 }
 
 /* ===========================
@@ -397,6 +361,10 @@ header p {
 
     header h1 {
         font-size: 1.8em;
+    }
+
+    .input-pair {
+        grid-template-columns: 1fr;
     }
 
     .button-group {
