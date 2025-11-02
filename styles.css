@@ -1,0 +1,359 @@
+/* ===========================
+   GLOBAL STYLES & RESET
+   =========================== */
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+/* ===========================
+   INPUT CONTAINER (Screen View)
+   =========================== */
+.input-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+}
+
+/* Header Styling */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #667eea;
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1em;
+    color: #666;
+}
+
+/* Instructions Section */
+.instructions {
+    background: #f8f9ff;
+    border-left: 4px solid #667eea;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+}
+
+.instructions h2 {
+    color: #667eea;
+    font-size: 1.3em;
+    margin-bottom: 15px;
+}
+
+.instructions ol {
+    margin-left: 20px;
+    line-height: 1.8;
+    color: #555;
+}
+
+.instructions li {
+    margin-bottom: 8px;
+}
+
+/* Card Input Groups */
+.card-input-group {
+    background: #fafbff;
+    border: 2px solid #e0e7ff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.card-input-group:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.card-number {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.card-number::before {
+    content: '📝';
+    margin-right: 8px;
+}
+
+/* Input Pair Layout */
+.input-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .input-pair {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Input Fields */
+.input-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-field label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+
+.input-field textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e7ff;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1em;
+    resize: vertical;
+    transition: all 0.3s ease;
+    min-height: 80px;
+}
+
+.input-field textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-field textarea::placeholder {
+    color: #aaa;
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #e0e7ff;
+}
+
+.btn {
+    padding: 15px 40px;
+    font-size: 1.1em;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ===========================
+   PRINT CONTAINER (Hidden on Screen)
+   =========================== */
+.print-container {
+    display: none;
+}
+
+/* ===========================
+   PRINT STYLES (US Letter Size)
+   =========================== */
+@media print {
+    /* Hide everything except print container */
+    body {
+        background: white;
+        padding: 0;
+        margin: 0;
+    }
+
+    .input-container {
+        display: none !important;
+    }
+
+    .print-container {
+        display: block !important;
+    }
+
+    /* Page Setup for US Letter */
+    @page {
+        size: letter; /* US Letter: 8.5in x 11in */
+        margin: 0;
+    }
+
+    /* Each Print Page (Side A or Side B) */
+    .print-page {
+        width: 8.5in;
+        height: 11in;
+        page-break-after: always;
+        position: relative;
+        background: white;
+    }
+
+    .print-page:last-child {
+        page-break-after: auto;
+    }
+
+    /* Page Labels (optional - can be removed) */
+    .page-label {
+        position: absolute;
+        top: 0.1in;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 10pt;
+        color: #999;
+        font-weight: bold;
+    }
+
+    /* Cards Grid Layout: 2 columns x 4 rows */
+    .cards-grid {
+        width: 8.5in;
+        height: 11in;
+        display: grid;
+        grid-template-columns: repeat(2, 4.25in);
+        grid-template-rows: repeat(4, 2.75in);
+        gap: 0;
+    }
+
+    /* Individual Card Styling */
+    .card {
+        border: 1px dashed #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.3in;
+        text-align: center;
+        overflow: hidden;
+        position: relative;
+        word-wrap: break-word;
+        hyphens: auto;
+    }
+
+    /* Card Text Styling */
+    .card {
+        font-family: Arial, sans-serif;
+        font-size: 16pt; /* Default size - JavaScript will adjust this */
+        line-height: 1.4;
+        color: #000;
+    }
+
+    /* Remove borders for cleaner look (optional) */
+    /* Uncomment the line below if you don't want dashed borders */
+    /* .card { border: none; } */
+
+    /* Mirrored Layout for Side B (Answers) */
+    /* This ensures answers align with questions when printed double-sided */
+    .cards-grid.mirrored {
+        grid-template-areas:
+            "a2 a1"
+            "a4 a3"
+            "a6 a5"
+            "a8 a7";
+    }
+
+    /* Assign grid areas to answer cards */
+    #print-a1 { grid-area: a1; }
+    #print-a2 { grid-area: a2; }
+    #print-a3 { grid-area: a3; }
+    #print-a4 { grid-area: a4; }
+    #print-a5 { grid-area: a5; }
+    #print-a6 { grid-area: a6; }
+    #print-a7 { grid-area: a7; }
+    #print-a8 { grid-area: a8; }
+
+    /* Optional: Add cut guides at corners */
+    .card::before,
+    .card::after {
+        content: '';
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border: 1px solid #ccc;
+    }
+
+    .card::before {
+        top: 0;
+        left: 0;
+        border-right: none;
+        border-bottom: none;
+    }
+
+    .card::after {
+        top: 0;
+        right: 0;
+        border-left: none;
+        border-bottom: none;
+    }
+}
+
+/* ===========================
+   RESPONSIVE DESIGN
+   =========================== */
+@media (max-width: 768px) {
+    .input-container {
+        padding: 20px;
+    }
+
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
