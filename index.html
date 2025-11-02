@@ -3,205 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flash Cards App</title>
+    <title>Flash Cards Printer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <!-- Input section (visible on screen, hidden when printing)-->
-    <div class="input-container">
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Header -->
         <header>
             <h1>📚 Flash Cards Printer</h1>
-            <p>Create printable double-sided flash cards</p>
+            <p>Create unlimited printable flash cards</p>
         </header>
-    
-        <div class="instructions">
-            <h2>instructions:</h2>
-            <ol>
-                <li>Enter your questions (Q1-Q8) and answers (A1-A8)</li>
-                <li>Click "Preview & Print" to see the layout</li>
-                <li>Print double-sided on US Letter paper</li>
-                <li>Cut along the grid to create 8 flash cards</li>
-            </ol>
-        </div>
-    
-    <!-- Flash Card Input Form-->
-    <form id="flashCardForm">
-        <!-- Card 1-->
-         <div class="card-input-group">
-            <div class="card-number">Card 1</div>
-            <div class="input-pair">
-                <div class="input-field">
-                    <label for="q1">Q1 - Question</label>
-                    <textarea name="q1" id="q1" placeholder="Enter question 1..." rows="3"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="a1">A1 - Answer</label>
-                    <textarea name="a1" id="a1" placeholder="Enter answer 1..."></textarea>
-                </div>
-            </div>
-         </div>
-    <!-- Flash Card Input Form-->
-    <form id="flashCardForm">
-        <!-- Card 2-->
-         <div class="card-input-group">
-            <div class="card-number">Card 2</div>
-            <div class="input-pair">
-                <div class="input-field">
-                    <label for="q2">Q2 - Question</label>
-                    <textarea name="q2" id="q2" placeholder="Enter question 2..." rows="3"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="a2">A2 - Answer</label>
-                    <textarea name="a2" id="a2" placeholder="Enter answer 2..."></textarea>
-                </div>
-            </div>
-         </div>
-    <!-- Flash Card Input Form-->
-    <form id="flashCardForm">
-        <!-- Card 3-->
-         <div class="card-input-group">
-            <div class="card-number">Card 3</div>
-            <div class="input-pair">
-                <div class="input-field">
-                    <label for="q3">Q3 - Question</label>
-                    <textarea name="q3" id="q3" placeholder="Enter question 3..." rows="3"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="a3">A3 - Answer</label>
-                    <textarea name="a3" id="a3" placeholder="Enter answer 3..."></textarea>
-                </div>
-            </div>
-         </div>
-    <!-- Flash Card Input Form-->
-    <form id="flashCardForm">
-        <!-- Card 4-->
-         <div class="card-input-group">
-            <div class="card-number">Card 4</div>
-            <div class="input-pair">
-                <div class="input-field">
-                    <label for="q4">Q4 - Question</label>
-                    <textarea name="q4" id="q4" placeholder="Enter question 4..." rows="3"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="a4">A4 - Answer</label>
-                    <textarea name="a4" id="a4" placeholder="Enter answer 4..."></textarea>
-                </div>
-            </div>
-         </div>
-    <!-- Flash Card Input Form-->
-    <form id="flashCardForm">
-        <!-- Card 5-->
-         <div class="card-input-group">
-            <div class="card-number">Card 5</div>
-            <div class="input-pair">
-                <div class="input-field">
-                    <label for="q5">Q5 - Question</label>
-                    <textarea name="q5" id="q5" placeholder="Enter question 5..." rows="3"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="a5">A5 - Answer</label>
-                    <textarea name="a5" id="a5" placeholder="Enter answer 5..."></textarea>
-                </div>
-            </div>
-         </div>
-    <!-- Flash Card Input Form-->
-    <form id="flashCardForm">
-        <!-- Card 6-->
-         <div class="card-input-group">
-            <div class="card-number">Card 6</div>
-            <div class="input-pair">
-                <div class="input-field">
-                    <label for="q6">Q6 - Question</label>
-                    <textarea name="q6" id="q6" placeholder="Enter question 6..." rows="3"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="a6">A6 - Answer</label>
-                    <textarea name="a6" id="a6" placeholder="Enter answer 6..."></textarea>
-                </div>
-            </div>
-         </div>
-    <!-- Flash Card Input Form-->
-    <form id="flashCardForm">
-        <!-- Card 7-->
-         <div class="card-input-group">
-            <div class="card-number">Card 7</div>
-            <div class="input-pair">
-                <div class="input-field">
-                    <label for="q7">Q7 - Question</label>
-                    <textarea name="q7" id="q7" placeholder="Enter question 7..." rows="3"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="a7">A7 - Answer</label>
-                    <textarea name="a7" id="a7" placeholder="Enter answer 7..."></textarea>
-                </div>
-            </div>
-         </div>
-    <!-- Flash Card Input Form-->
-    <form id="flashCardForm">
-        <!-- Card 8-->
-         <div class="card-input-group">
-            <div class="card-number">Card 8</div>
-            <div class="input-pair">
-                <div class="input-field">
-                    <label for="q8">Q8 - Question</label>
-                    <textarea name="q8" id="q8" placeholder="Enter question 8..." rows="3"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="a8">A8 - Answer</label>
-                    <textarea name="a8" id="a8" placeholder="Enter answer 8..."></textarea>
-                </div>
-            </div>
-         </div>
-         <!-- Action Buttons-->
-          <div class="button-group">
-            <button type="button" id="previewBtn" class="btn btn-primary">
-                👁️ Preview & Print
-            </button>
+
+        <!-- Card Input Section -->
+        <div class="card-creator">
+            <h2>Create New Card</h2>
             
-            <button type="button" id="clearBtn" class="btn btn-secondary">
-                🗑️ Clear All
-            </button>
-          </div>
-    </form>
-</div>
+            <div class="input-row">
+                <div class="input-field">
+                    <label for="questionInput">Question</label>
+                    <textarea id="questionInput" placeholder="Enter your question..." rows="4"></textarea>
+                </div>
+                
+                <div class="input-field">
+                    <label for="answerInput">Answer</label>
+                    <textarea id="answerInput" placeholder="Enter your answer..." rows="4"></textarea>
+                </div>
+            </div>
 
-<!-- Print Section (hidden on screen, visible when printing) -->
-    <!-- This will be populated by JavaScript -->
-    <div class="print-container">
-        <!-- Side A: Questions -->
-        <div class="print-page" id="sideA">
-            <div class="page-label">SIDE A - QUESTIONS (Print this side first)</div>
-            <div class="cards-grid">
-                <div class="card" id="print-q1" data-card="q1"></div>
-                <div class="card" id="print-q2" data-card="q2"></div>
-                <div class="card" id="print-q3" data-card="q3"></div>
-                <div class="card" id="print-q4" data-card="q4"></div>
-                <div class="card" id="print-q5" data-card="q5"></div>
-                <div class="card" id="print-q6" data-card="q6"></div>
-                <div class="card" id="print-q7" data-card="q7"></div>
-                <div class="card" id="print-q8" data-card="q8"></div>
+            <div class="creator-actions">
+                <button id="addCardBtn" class="btn btn-primary">➕ Add Card</button>
+                <button id="updateCardBtn" class="btn btn-success" style="display: none;">✓ Update Card</button>
+                <button id="cancelEditBtn" class="btn btn-secondary" style="display: none;">✕ Cancel</button>
             </div>
         </div>
 
-        <!-- Side B: Answers (mirrored for double-sided printing) -->
-        <div class="print-page" id="sideB">
-            <div class="page-label">SIDE B - ANSWERS (Flip paper and print this side)</div>
-            <div class="cards-grid mirrored">
-                <div class="card" id="print-a1" data-card="a1"></div>
-                <div class="card" id="print-a2" data-card="a2"></div>
-                <div class="card" id="print-a3" data-card="a3"></div>
-                <div class="card" id="print-a4" data-card="a4"></div>
-                <div class="card" id="print-a5" data-card="a5"></div>
-                <div class="card" id="print-a6" data-card="a6"></div>
-                <div class="card" id="print-a7" data-card="a7"></div>
-                <div class="card" id="print-a8" data-card="a8"></div>
+        <!-- Configuration Section -->
+        <div class="config-section">
+            <label for="cardsPerSheet">Cards per sheet:</label>
+            <select id="cardsPerSheet">
+                <option value="4">4 cards (2×2)</option>
+                <option value="6">6 cards (2×3)</option>
+                <option value="8" selected>8 cards (2×4)</option>
+            </select>
+            <span class="card-count" id="cardCount">0 cards</span>
+        </div>
+
+        <!-- Card Collection -->
+        <div class="card-collection">
+            <div class="collection-header">
+                <h2>Your Cards</h2>
+                <div class="collection-actions">
+                    <button id="printAllBtn" class="btn btn-primary">🖨️ Print All</button>
+                    <button id="clearAllBtn" class="btn btn-danger">🗑️ Clear All</button>
+                </div>
+            </div>
+
+            <div id="cardList" class="card-list">
+                <div class="empty-state">
+                    <p>No cards yet. Create your first card above! 👆</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Print Container (Generated Dynamically) -->
+    <div class="print-container" id="printContainer"></div>
 
+    <script src="script.js"></script>
 </body>
 </html>
-

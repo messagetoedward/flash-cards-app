@@ -1,230 +1,309 @@
 // ===========================
-// FLASH CARDS APP - WITH AUTO-MERGE
+// FLASH CARDS APP - DYNAMIC VERSION
 // ===========================
 
-// Track merged cards
-const mergedCards = {
-    questions: new Set(),
-    answers: new Set()
-};
+// State
+let cards = [];
+let editingCardId = null;
+const STORAGE_KEY = 'flashcards_data';
 
-// Wait for DOM to be fully loaded
+// DOM Elements
+let questionInput, answerInput, addCardBtn, updateCardBtn, cancelEditBtn;
+let cardList, cardCount, printAllBtn, clearAllBtn, cardsPerSheetSelect;
+let printContainer;
+
+// ===========================
+// INITIALIZATION
+// ===========================
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Get button elements
-    const previewBtn = document.getElementById('previewBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    
-    // Add event listeners
-    previewBtn.addEventListener('click', populateCardsAndPrint);
-    clearBtn.addEventListener('click', clearAllFields);
-    
-    // Also populate cards whenever user types (for real-time preview)
-    const allTextareas = document.querySelectorAll('textarea');
-    allTextareas.forEach(textarea => {
-        textarea.addEventListener('input', populateCards);
-    });
-    
-    // Initial population (in case of browser auto-fill)
-    populateCards();
+    // Get DOM elements
+    questionInput = document.getElementById('questionInput');
+    answerInput = document.getElementById('answerInput');
+    addCardBtn = document.getElementById('addCardBtn');
+    updateCardBtn = document.getElementById('updateCardBtn');
+    cancelEditBtn = document.getElementById('cancelEditBtn');
+    cardList = document.getElementById('cardList');
+    cardCount = document.getElementById('cardCount');
+    printAllBtn = document.getElementById('printAllBtn');
+    clearAllBtn = document.getElementById('clearAllBtn');
+    cardsPerSheetSelect = document.getElementById('cardsPerSheet');
+    printContainer = document.getElementById('printContainer');
+
+    // Event listeners
+    addCardBtn.addEventListener('click', addCard);
+    updateCardBtn.addEventListener('click', updateCard);
+    cancelEditBtn.addEventListener('click', cancelEdit);
+    printAllBtn.addEventListener('click', printAllCards);
+    clearAllBtn.addEventListener('click', clearAllCards);
+    cardsPerSheetSelect.addEventListener('change', updateCardCount);
+
+    // Keyboard shortcuts
+    questionInput.addEventListener('keydown', handleInputKeydown);
+    answerInput.addEventListener('keydown', handleInputKeydown);
+
+    // Load cards from localStorage
+    loadCards();
+    renderCardList();
+    updateCardCount();
 });
 
 // ===========================
-// POPULATE PRINT CARDS WITH MERGE DETECTION
+// CARD CRUD OPERATIONS
 // ===========================
-function populateCards() {
-    // Reset merged cards tracking
-    mergedCards.questions.clear();
-    mergedCards.answers.clear();
-    
-    // Reset all card classes
-    for (let i = 1; i <= 8; i++) {
-        const printQ = document.getElementById(`print-q${i}`);
-        const printA = document.getElementById(`print-a${i}`);
-        printQ.className = 'card';
-        printA.className = 'card';
-        
-        // Re-enable all input groups
-        const qCardGroup = document.querySelector(`#q${i}`).closest('.card-input-group');
-        const aCardGroup = document.querySelector(`#a${i}`).closest('.card-input-group');
-        qCardGroup.classList.remove('merged-into');
-        aCardGroup.classList.remove('merged-into');
-        
-        // Re-enable inputs
-        document.getElementById(`q${i}`).disabled = false;
-        document.getElementById(`a${i}`).disabled = false;
+
+function addCard() {
+    const question = questionInput.value.trim();
+    const answer = answerInput.value.trim();
+
+    if (!question && !answer) {
+        alert('⚠️ Please enter at least a question or answer!');
+        return;
     }
+
+    const card = {
+        id: Date.now(),
+        question: question || '(No question)',
+        answer: answer || '(No answer)',
+        createdAt: new Date().toISOString()
+    };
+
+    cards.push(card);
+    saveCards();
+    renderCardList();
+    updateCardCount();
+    clearInputs();
     
-    // Reset grid classes
-    const sideA = document.getElementById('sideA').querySelector('.cards-grid');
-    const sideB = document.getElementById('sideB').querySelector('.cards-grid');
-    sideA.className = 'cards-grid';
-    sideB.className = 'cards-grid mirrored';
-    
-    // First pass: detect which cards need merging
-    const needsQMerge = {};
-    const needsAMerge = {};
-    
-    for (let i = 1; i <= 8; i += 2) { // Only check odd cards (1,3,5,7)
-        const questionText = document.getElementById(`q${i}`).value.trim();
-        const answerText = document.getElementById(`a${i}`).value.trim();
-        
-        needsQMerge[i] = questionText && needsMerge(questionText) && (i + 2 <= 8);
-        needsAMerge[i] = answerText && needsMerge(answerText) && (i + 2 <= 8);
+    // Scroll to bottom to show new card
+    cardList.scrollTop = cardList.scrollHeight;
+}
+
+function editCard(id) {
+    const card = cards.find(c => c.id === id);
+    if (!card) return;
+
+    // Populate inputs
+    questionInput.value = card.question === '(No question)' ? '' : card.question;
+    answerInput.value = card.answer === '(No answer)' ? '' : card.answer;
+
+    // Switch to edit mode
+    editingCardId = id;
+    addCardBtn.style.display = 'none';
+    updateCardBtn.style.display = 'inline-flex';
+    cancelEditBtn.style.display = 'inline-flex';
+
+    // Focus question input
+    questionInput.focus();
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateCard() {
+    if (!editingCardId) return;
+
+    const question = questionInput.value.trim();
+    const answer = answerInput.value.trim();
+
+    if (!question && !answer) {
+        alert('⚠️ Please enter at least a question or answer!');
+        return;
     }
-    
-    // Second pass: populate cards
-    for (let i = 1; i <= 8; i++) {
-        if (mergedCards.questions.has(i) || mergedCards.answers.has(i)) {
-            continue;
-        }
-        
-        const questionText = document.getElementById(`q${i}`).value.trim();
-        const answerText = document.getElementById(`a${i}`).value.trim();
-        const printQuestionCard = document.getElementById(`print-q${i}`);
-        const printAnswerCard = document.getElementById(`print-a${i}`);
-        
-        // Check if EITHER Q or A needs merge for this pair
-        const shouldMergeQ = needsQMerge[i] || needsAMerge[i];
-        const shouldMergeA = needsAMerge[i] || needsQMerge[i];
-        
-        // Handle Question
-        if (shouldMergeQ && (i + 2 <= 8)) {
-            handleMerge(i, i + 2, 'q', questionText || `Q${i}`);
+
+    const cardIndex = cards.findIndex(c => c.id === editingCardId);
+    if (cardIndex !== -1) {
+        cards[cardIndex].question = question || '(No question)';
+        cards[cardIndex].answer = answer || '(No answer)';
+        saveCards();
+        renderCardList();
+    }
+
+    cancelEdit();
+}
+
+function deleteCard(id) {
+    if (!confirm('🗑️ Delete this card?')) return;
+
+    cards = cards.filter(c => c.id !== id);
+    saveCards();
+    renderCardList();
+    updateCardCount();
+}
+
+function clearAllCards() {
+    if (cards.length === 0) {
+        alert('No cards to clear!');
+        return;
+    }
+
+    if (!confirm(`🗑️ Delete all ${cards.length} cards? This cannot be undone!`)) return;
+
+    cards = [];
+    saveCards();
+    renderCardList();
+    updateCardCount();
+}
+
+function cancelEdit() {
+    editingCardId = null;
+    clearInputs();
+    addCardBtn.style.display = 'inline-flex';
+    updateCardBtn.style.display = 'none';
+    cancelEditBtn.style.display = 'none';
+}
+
+// ===========================
+// RENDER FUNCTIONS
+// ===========================
+
+function renderCardList() {
+    if (cards.length === 0) {
+        cardList.innerHTML = `
+            <div class="empty-state">
+                <p>No cards yet. Create your first card above! 👆</p>
+            </div>
+        `;
+        return;
+    }
+
+    cardList.innerHTML = cards.map((card, index) => `
+        <div class="card-item">
+            <div class="card-number">${index + 1}</div>
+            <div class="card-preview">
+                <div class="card-preview-question">${escapeHtml(card.question)}</div>
+                <div class="card-preview-answer">${escapeHtml(card.answer)}</div>
+            </div>
+            <div class="card-actions">
+                <button class="btn-edit" onclick="editCard(${card.id})">✏️ Edit</button>
+                <button class="btn-delete" onclick="deleteCard(${card.id})">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ===========================
+// PRINT FUNCTIONS
+// ===========================
+
+function printAllCards() {
+    if (cards.length === 0) {
+        alert('⚠️ No cards to print! Create some cards first.');
+        return;
+    }
+
+    const cardsPerSheet = parseInt(cardsPerSheetSelect.value);
+    generatePrintPages(cardsPerSheet);
+
+    setTimeout(() => {
+        window.print();
+    }, 200);
+}
+
+function generatePrintPages(cardsPerSheet) {
+    printContainer.innerHTML = '';
+
+    // Calculate how many sheets needed
+    const totalSheets = Math.ceil(cards.length / cardsPerSheet);
+
+    for (let sheetNum = 0; sheetNum < totalSheets; sheetNum++) {
+        const startIdx = sheetNum * cardsPerSheet;
+        const endIdx = Math.min(startIdx + cardsPerSheet, cards.length);
+        const sheetCards = cards.slice(startIdx, endIdx);
+
+        // Create Side A (Questions)
+        const sideA = createPrintPage(sheetCards, 'question', cardsPerSheet);
+        printContainer.appendChild(sideA);
+
+        // Create Side B (Answers - mirrored)
+        const sideB = createPrintPage(sheetCards, 'answer', cardsPerSheet);
+        printContainer.appendChild(sideB);
+    }
+}
+
+function createPrintPage(cards, side, cardsPerSheet) {
+    const page = document.createElement('div');
+    page.className = 'print-page';
+
+    const grid = document.createElement('div');
+    grid.className = `cards-grid-${cardsPerSheet}`;
+
+    // Determine grid layout
+    const cols = 2;
+    const rows = cardsPerSheet / cols;
+
+    // Fill grid with cards
+    for (let i = 0; i < cardsPerSheet; i++) {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        if (i < cards.length) {
+            const cardData = cards[i];
+            const text = side === 'question' ? cardData.question : cardData.answer;
+            card.textContent = text;
+
+            // Auto-resize text
+            setTimeout(() => autoResizeText(card), 10);
         } else {
-            printQuestionCard.textContent = questionText || `Q${i}`;
-            autoResizeText(printQuestionCard, false);
+            // Empty card
+            card.textContent = '';
         }
-        
-        // Handle Answer
-        if (shouldMergeA && (i + 2 <= 8)) {
-            handleMerge(i, i + 2, 'a', answerText || `A${i}`);
-        } else {
-            printAnswerCard.textContent = answerText || `A${i}`;
-            autoResizeText(printAnswerCard, false);
+
+        // Position card in grid
+        if (side === 'answer') {
+            // Mirror for answers
+            const row = Math.floor(i / cols) + 1;
+            const col = (i % cols === 0) ? 2 : 1;
+            card.style.gridRow = row;
+            card.style.gridColumn = col;
         }
+
+        grid.appendChild(card);
     }
+
+    page.appendChild(grid);
+    return page;
 }
 
 // ===========================
-// CHECK IF TEXT NEEDS MERGE
+// AUTO-RESIZE TEXT
 // ===========================
-function needsMerge(text) {
-    // Simple heuristic: if text is very long, it needs merge
-    // Adjust threshold as needed
-    return text.length > 450; // Characters threshold
-}
 
-// ===========================
-// HANDLE MERGING TWO CARDS
-// ===========================
-function handleMerge(sourceIndex, targetIndex, type, text) {
-    // type is 'q' or 'a'
-    const sourceCard = document.getElementById(`print-${type}${sourceIndex}`);
-    const targetCard = document.getElementById(`print-${type}${targetIndex}`);
-    
-    // Mark as merged
-    sourceCard.classList.add('merged');
-    targetCard.classList.add('hidden');
-    
-    // Set text in the merged card
-    sourceCard.textContent = text;
-    
-    // Track merge
-    if (type === 'q') {
-        mergedCards.questions.add(targetIndex);
-    } else {
-        mergedCards.answers.add(targetIndex);
-    }
-    
-    // Disable the target input field
-    const targetInput = document.getElementById(`${type}${targetIndex}`);
-    const targetCardGroup = targetInput.closest('.card-input-group');
-    targetCardGroup.classList.add('merged-into');
-    targetInput.value = ''; // Clear merged field
-    targetInput.disabled = true;
-    
-    // Add grid class to parent
-    const gridParent = sourceCard.parentElement;
-    gridParent.classList.add(`has-merged-${type}${sourceIndex}-${type}${targetIndex}`);
-    
-    // Auto-resize the merged card
-    autoResizeText(sourceCard, true);
-}
-
-// ===========================
-// AUTO-RESIZE TEXT TO FIT CARD
-// ===========================
-function autoResizeText(element, isMerged = false) {
+function autoResizeText(element) {
     const text = element.textContent.trim();
-    
-    // If empty, keep default and exit
-    if (!text || text.startsWith('Q') || text.startsWith('A')) {
+    if (!text) {
         element.style.fontSize = '16pt';
         return;
     }
-    
-    // Starting font size based on text length and merge status
-    let fontSize;
-    if (isMerged) {
-        // Merged cards have more space
-        if (text.length < 50) {
-            fontSize = 20;
-        } else if (text.length < 150) {
-            fontSize = 16;
-        } else if (text.length < 300) {
-            fontSize = 14;
-        } else {
-            fontSize = 12;
-        }
-    } else {
-        // Single cards
-        if (text.length < 20) {
-            fontSize = 24;
-        } else if (text.length < 50) {
-            fontSize = 20;
-        } else if (text.length < 100) {
-            fontSize = 16;
-        } else if (text.length < 200) {
-            fontSize = 14;
-        } else {
-            fontSize = 12;
-        }
-    }
-    
-    const minFontSize = isMerged ? 10 : 8;  // Merged cards can be slightly larger
+
+    let fontSize = text.length < 50 ? 20 : text.length < 150 ? 16 : 12;
+    const minFontSize = 8;
     const maxFontSize = 28;
-    
-    // Binary search for optimal font size
+
     let low = minFontSize;
     let high = Math.min(fontSize, maxFontSize);
     let bestFit = minFontSize;
-    
+
     while (low <= high) {
         const mid = Math.floor((low + high) / 2);
         element.style.fontSize = mid + 'pt';
-        
-        // Check if text fits
+
         const fits = element.scrollHeight <= element.clientHeight && 
                      element.scrollWidth <= element.clientWidth;
-        
+
         if (fits) {
             bestFit = mid;
-            low = mid + 1; // Try larger
+            low = mid + 1;
         } else {
-            high = mid - 1; // Try smaller
+            high = mid - 1;
         }
     }
-    
-    // Set the best fitting size
+
     element.style.fontSize = bestFit + 'pt';
-    
-    // Final check - if still overflowing, force smaller
+
+    // Final check
     let attempts = 0;
     while ((element.scrollHeight > element.clientHeight || 
             element.scrollWidth > element.clientWidth) && 
-            bestFit > minFontSize && 
-            attempts < 20) {
+            bestFit > minFontSize && attempts < 20) {
         bestFit -= 0.5;
         element.style.fontSize = bestFit + 'pt';
         attempts++;
@@ -232,80 +311,58 @@ function autoResizeText(element, isMerged = false) {
 }
 
 // ===========================
-// POPULATE AND TRIGGER PRINT
+// LOCALSTORAGE FUNCTIONS
 // ===========================
-function populateCardsAndPrint() {
-    // Check if at least one card is filled
-    let hasContent = false;
-    for (let i = 1; i <= 8; i++) {
-        const q = document.getElementById(`q${i}`).value.trim();
-        const a = document.getElementById(`a${i}`).value.trim();
-        if (q || a) {
-            hasContent = true;
-            break;
-        }
-    }
-    
-    if (!hasContent) {
-        alert('⚠️ Please fill in at least one question or answer before printing!');
-        return;
-    }
-    
-    // Populate the print cards
-    populateCards();
-    
-    // Small delay to ensure rendering is complete
-    setTimeout(() => {
-        window.print();
-    }, 200); // Increased delay for merge calculations
+
+function saveCards() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
 }
 
-// ===========================
-// CLEAR ALL FIELDS
-// ===========================
-function clearAllFields() {
-    // Confirm before clearing
-    const confirmClear = confirm('🗑️ Are you sure you want to clear all fields?');
-    
-    if (confirmClear) {
-        // Clear all textareas and re-enable them
-        for (let i = 1; i <= 8; i++) {
-            const qField = document.getElementById(`q${i}`);
-            const aField = document.getElementById(`a${i}`);
-            
-            qField.value = '';
-            aField.value = '';
-            qField.disabled = false;
-            aField.disabled = false;
-            
-            // Remove merged-into class
-            qField.closest('.card-input-group').classList.remove('merged-into');
+function loadCards() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+        try {
+            cards = JSON.parse(stored);
+        } catch (e) {
+            console.error('Failed to load cards:', e);
+            cards = [];
         }
-        
-        // Reset merged cards tracking
-        mergedCards.questions.clear();
-        mergedCards.answers.clear();
-        
-        // Clear print cards
-        populateCards();
-        
-        console.log('✅ All fields cleared');
     }
 }
 
 // ===========================
-// KEYBOARD SHORTCUTS
+// UTILITY FUNCTIONS
 // ===========================
-document.addEventListener('keydown', function(event) {
-    // Ctrl/Cmd + P for print
-    if ((event.ctrlKey || event.metaKey) && event.key === 'p') {
-        event.preventDefault();
-        populateCardsAndPrint();
+
+function updateCardCount() {
+    const count = cards.length;
+    cardCount.textContent = `${count} card${count !== 1 ? 's' : ''}`;
+}
+
+function clearInputs() {
+    questionInput.value = '';
+    answerInput.value = '';
+    questionInput.focus();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function handleInputKeydown(e) {
+    // Ctrl/Cmd + Enter to add card quickly
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (editingCardId) {
+            updateCard();
+        } else {
+            addCard();
+        }
     }
-    
-    // Ctrl/Cmd + L for clear
-    if ((event.ctrlKey || event.metaKey) && event.key === 'l') {
-        event.preventDefault();
-        clearAllFields();
-    }
-});
+}
+
+// Make functions globally accessible for onclick handlers
+window.editCard = editCard;
+window.deleteCard = deleteCard;
