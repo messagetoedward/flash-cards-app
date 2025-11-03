@@ -19,7 +19,7 @@ body {
    APP CONTAINER
    =========================== */
 .app-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     background: white;
     border-radius: 20px;
@@ -27,10 +27,9 @@ body {
     padding: 40px;
 }
 
-/* Header */
 header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 3px solid #667eea;
 }
@@ -44,6 +43,25 @@ header h1 {
 header p {
     font-size: 1.1em;
     color: #666;
+}
+
+/* ===========================
+   MAIN CONTENT LAYOUT
+   =========================== */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 30px;
+}
+
+.left-section {
+    min-width: 0;
+}
+
+.right-section {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
 }
 
 /* ===========================
@@ -80,6 +98,20 @@ header p {
     color: #555;
     margin-bottom: 8px;
     font-size: 0.95em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.char-count {
+    font-size: 0.85em;
+    color: #999;
+    font-weight: normal;
+}
+
+.char-count.warning {
+    color: #ff9800;
+    font-weight: bold;
 }
 
 .input-field textarea {
@@ -164,9 +196,8 @@ header p {
     gap: 10px;
 }
 
-/* Card List */
 .card-list {
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: auto;
     padding-right: 10px;
 }
@@ -185,7 +216,6 @@ header p {
     border-radius: 10px;
 }
 
-/* Empty State */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -193,7 +223,7 @@ header p {
     font-size: 1.1em;
 }
 
-/* Card Item (Compact) */
+/* Card Item */
 .card-item {
     background: white;
     border: 2px solid #e0e7ff;
@@ -211,10 +241,15 @@ header p {
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
 }
 
+.card-item.merged {
+    border-color: #ff9800;
+    background: #fff9f0;
+}
+
 .card-number {
     background: #667eea;
     color: white;
-    width: 40px;
+    min-width: 40px;
     height: 40px;
     border-radius: 50%;
     display: flex;
@@ -223,6 +258,10 @@ header p {
     font-weight: bold;
     font-size: 1.1em;
     flex-shrink: 0;
+}
+
+.card-item.merged .card-number {
+    background: #ff9800;
 }
 
 .card-preview {
@@ -245,6 +284,15 @@ header p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.card-badge {
+    background: #ff9800;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
 }
 
 .card-actions {
@@ -278,6 +326,256 @@ header p {
 
 .btn-delete:hover {
     background: #da190b;
+}
+
+/* ===========================
+   GRID PREVIEW
+   =========================== */
+.grid-preview {
+    background: #f8f9ff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid #e0e7ff;
+}
+
+.grid-preview h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.sheet-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+}
+
+.sheet-tab {
+    padding: 8px 16px;
+    border: 2px solid #e0e7ff;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.2s ease;
+}
+
+.sheet-tab:hover {
+    border-color: #667eea;
+}
+
+.sheet-tab.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+    aspect-ratio: 8.5 / 11;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #e0e7ff;
+}
+
+.grid-cell {
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5em;
+    color: #ccc;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.grid-cell.empty {
+    background: #fafafa;
+}
+
+.grid-cell.occupied {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.grid-cell.merged {
+    background: #ff9800;
+    color: white;
+    border-color: #ff9800;
+}
+
+.grid-cell.merged::after {
+    content: '⬌';
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    font-size: 0.7em;
+}
+
+.preview-legend {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    font-size: 0.9em;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 2px solid #ccc;
+}
+
+.legend-box.empty {
+    background: #fafafa;
+}
+
+.legend-box.occupied {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+.legend-box.merged {
+    background: #ff9800;
+    border-color: #ff9800;
+}
+
+/* ===========================
+   MERGE DIALOG MODAL
+   =========================== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3 {
+    color: #ff9800;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.modal-content p {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.merge-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.merge-option {
+    border: 2px solid #e0e7ff;
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 12px;
+}
+
+.merge-option:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.merge-option input[type="radio"] {
+    margin-top: 3px;
+    cursor: pointer;
+}
+
+.merge-option input[type="radio"]:checked + .option-details {
+    color: #667eea;
+}
+
+.option-details {
+    flex: 1;
+}
+
+.option-details strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1.05em;
+}
+
+.option-desc {
+    display: block;
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.option-visual {
+    margin-top: 10px;
+}
+
+.mini-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 40px);
+    grid-template-rows: repeat(2, 40px);
+    gap: 4px;
+}
+
+.mini-cell {
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    background: #fafafa;
+}
+
+.mini-cell.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
 }
 
 /* ===========================
@@ -378,34 +676,26 @@ header p {
         page-break-after: auto;
     }
 
-    /* Grid for 8 cards (2x4) */
-    .cards-grid-8 {
+    .cards-grid {
         width: 8.5in;
         height: 11in;
         display: grid;
+        gap: 0;
+    }
+
+    .cards-grid-8 {
         grid-template-columns: 4.25in 4.25in;
         grid-template-rows: 2.75in 2.75in 2.75in 2.75in;
-        gap: 0;
     }
 
-    /* Grid for 6 cards (2x3) */
     .cards-grid-6 {
-        width: 8.5in;
-        height: 11in;
-        display: grid;
         grid-template-columns: 4.25in 4.25in;
         grid-template-rows: 3.67in 3.67in 3.67in;
-        gap: 0;
     }
 
-    /* Grid for 4 cards (2x2) */
     .cards-grid-4 {
-        width: 8.5in;
-        height: 11in;
-        display: grid;
         grid-template-columns: 4.25in 4.25in;
         grid-template-rows: 5.5in 5.5in;
-        gap: 0;
     }
 
     .card {
@@ -422,8 +712,35 @@ header p {
         font-size: 16pt;
         line-height: 1.4;
         color: #000;
+        position: relative;
     }
 
+    /* Card spanning */
+    .card.span-down {
+        grid-row: span 2;
+    }
+
+    .card.span-right {
+        grid-column: span 2;
+    }
+
+    .card.card-hidden {
+        display: none;
+    }
+
+    .card.card-empty {
+        border: none;
+        background: transparent;
+    }
+
+    /* Mirrored grid for answers */
+    .cards-grid.mirrored {
+        direction: rtl;
+    }
+
+    .cards-grid.mirrored .card {
+        direction: ltr;
+    }
     .card::before,
     .card::after {
         content: '';
@@ -451,6 +768,16 @@ header p {
 /* ===========================
    RESPONSIVE
    =========================== */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+
+    .right-section {
+        position: static;
+    }
+}
+
 @media (max-width: 768px) {
     .app-container {
         padding: 20px;
