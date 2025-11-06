@@ -100,6 +100,52 @@
                 </div>
             </div>
         </div>
+        <!-- JSON Import Section -->
+        <div class="json-import-section">
+            <h2>📥 Import from JSON</h2>
+            <p class="import-description">Paste JSON from LLM or upload a file to bulk-create cards</p>
+            
+            <div class="import-methods">
+                <!-- Method 1: Paste JSON -->
+                <div class="import-method">
+                    <label for="jsonInput">Paste JSON:</label>
+                    <textarea id="jsonInput" placeholder='[{"question":"What is AI?","answer":"Artificial Intelligence"}]' rows="4"></textarea>
+                    <button id="importJsonBtn" class="btn btn-primary">📥 Import JSON</button>
+                </div>
+
+                <!-- Method 2: Upload File -->
+                <div class="import-method">
+                    <label for="jsonFileInput">Or upload JSON file:</label>
+                    <input type="file" id="jsonFileInput" accept=".json" />
+                </div>
+            </div>
+
+            <!-- Format Guide (Collapsible) -->
+            <details class="format-guide">
+                <summary>📖 JSON Format Guide</summary>
+                <div class="format-content">
+                    <p><strong>Simple format:</strong></p>
+                    <pre>[
+  {"question": "What is HTML?", "answer": "Markup language"},
+  {"question": "What is CSS?", "answer": "Styling language"}
+]</pre>
+                    
+                    <p><strong>With merge control (optional):</strong></p>
+                    <pre>[
+  {
+    "question": "Long question...",
+    "answer": "Long answer...",
+    "mergeType": "down"
+  }
+]</pre>
+                    <p><code>mergeType</code> can be: <code>null</code>, <code>"down"</code>, or <code>"right"</code></p>
+                    
+                    <p><strong>💡 LLM Prompt Template:</strong></p>
+                    <pre>Generate 10 flashcards about [topic] in this exact JSON format:
+[{"question":"...","answer":"..."}]</pre>
+                </div>
+            </details>
+        </div>
     </div>
 
     <!-- Merge Dialog Modal -->
@@ -159,6 +205,144 @@
 
     <!-- Print Container (Generated Dynamically) -->
     <div class="print-container" id="printContainer"></div>
+
+    <!-- Edit Card Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>✏️ Edit Flash Card</h3>
+                <button class="modal-close" id="closeEditModal">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="edit-card-number" id="editCardNumber">Card #1</div>
+                
+                <div class="input-row">
+                    <!-- Question Section -->
+                    <div class="input-field">
+                        <label for="editQuestionInput">
+                            Question
+                            <span class="char-count" id="editQuestionCharCount">0 chars</span>
+                        </label>
+                        
+                        <!-- Question Toolbar -->
+                        <div class="rich-text-toolbar">
+                            <button type="button" class="toolbar-btn" onclick="formatText('question', 'bold')" title="Bold (Ctrl+B)">
+                                <strong>B</strong>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('question', 'italic')" title="Italic (Ctrl+I)">
+                                <em>I</em>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('question', 'underline')" title="Underline (Ctrl+U)">
+                                <u>U</u>
+                            </button>
+                            
+                            <div class="toolbar-divider"></div>
+                            
+                            <button type="button" class="toolbar-btn" onclick="formatText('question', 'alignLeft')" title="Align Left">
+                                ≡
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('question', 'alignCenter')" title="Align Center">
+                                ≣
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('question', 'alignRight')" title="Align Right">
+                                ≡
+                            </button>
+                            
+                            <div class="toolbar-divider"></div>
+                            
+                            <button type="button" class="toolbar-btn" onclick="formatText('question', 'bulletList')" title="Bullet List">
+                                ⦿
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('question', 'numberList')" title="Numbered List">
+                                ⓵
+                            </button>
+                            
+                            <div class="toolbar-divider"></div>
+                            
+                            <label class="toolbar-color-btn" title="Text Color">
+                                🎨
+                                <input type="color" id="questionColorPicker" onchange="formatText('question', 'color', this.value)" />
+                            </label>
+                            
+                            <button type="button" class="toolbar-btn toolbar-btn-clear" onclick="clearFormatting('question')" title="Clear All Formatting">
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <textarea id="editQuestionInput" rows="5"></textarea>
+                        
+                        <!-- Preview -->
+                        <div class="format-preview" id="questionPreview"></div>
+                    </div>
+                    
+                    <!-- Answer Section -->
+                    <div class="input-field">
+                        <label for="editAnswerInput">
+                            Answer
+                            <span class="char-count" id="editAnswerCharCount">0 chars</span>
+                        </label>
+                        
+                        <!-- Answer Toolbar -->
+                        <div class="rich-text-toolbar">
+                            <button type="button" class="toolbar-btn" onclick="formatText('answer', 'bold')" title="Bold (Ctrl+B)">
+                                <strong>B</strong>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('answer', 'italic')" title="Italic (Ctrl+I)">
+                                <em>I</em>
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('answer', 'underline')" title="Underline (Ctrl+U)">
+                                <u>U</u>
+                            </button>
+                            
+                            <div class="toolbar-divider"></div>
+                            
+                            <button type="button" class="toolbar-btn" onclick="formatText('answer', 'alignLeft')" title="Align Left">
+                                ≡
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('answer', 'alignCenter')" title="Align Center">
+                                ≣
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('answer', 'alignRight')" title="Align Right">
+                                ≡
+                            </button>
+                            
+                            <div class="toolbar-divider"></div>
+                            
+                            <button type="button" class="toolbar-btn" onclick="formatText('answer', 'bulletList')" title="Bullet List">
+                                ⦿
+                            </button>
+                            <button type="button" class="toolbar-btn" onclick="formatText('answer', 'numberList')" title="Numbered List">
+                                ⓵
+                            </button>
+                            
+                            <div class="toolbar-divider"></div>
+                            
+                            <label class="toolbar-color-btn" title="Text Color">
+                                🎨
+                                <input type="color" id="answerColorPicker" onchange="formatText('answer', 'color', this.value)" />
+                            </label>
+                            
+                            <button type="button" class="toolbar-btn toolbar-btn-clear" onclick="clearFormatting('answer')" title="Clear All Formatting">
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <textarea id="editAnswerInput" rows="5"></textarea>
+                        
+                        <!-- Preview -->
+                        <div class="format-preview" id="answerPreview"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="saveEditBtn" class="btn btn-success">✓ Save Changes</button>
+                <button id="deleteFromEditBtn" class="btn btn-danger">🗑️ Delete Card</button>
+                <button id="cancelEditModalBtn" class="btn btn-secondary">✕ Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
